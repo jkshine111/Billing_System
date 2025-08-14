@@ -41,6 +41,20 @@ Tech Stack: FastAPI · SQLite · Jinja2 · SQLAlchemy
   - CRUD: create/update products (name, stock, unit price, tax%)
   - Update stock and prices via a simple UI
 
+## 📸 Screenshots
+
+### 1. Billing Page
+![Billing Page](Screenshots/1Billing_page.png)
+
+### 2. Generate Bill & Email Sent Notification
+![Generate Bill & Email Sent](Screenshots/2Generate_Bill_and_Email_Sent.png)
+
+### 3. Purchase Details by Customer
+![Purchase Customer Details](Screenshots/3purchase_customer_details.png)
+
+### 4. All Products Details
+![All Products Details](Screenshots/4all_products_details.png)
+
 ## 🗂️ Project Structure
 
 ```
