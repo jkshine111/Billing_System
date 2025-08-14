@@ -10,8 +10,8 @@ from models import Purchase
 # ---- Config Email ----
 SMTP_HOST="smtp.gmail.com"
 SMTP_PORT="465" #SSL
-SMTP_PASS="enter your google app password"
-SMTP_FROM="yourmail@gmail.com"
+SMTP_PASS="enter your google app password" # Update this with your actual password
+SMTP_FROM="yourmail@gmail.com" # Update this with your actual email
 USE_SSL="true"
 
 def _build_line_items(purchase):

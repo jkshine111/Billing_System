@@ -141,11 +141,32 @@ def admin_products_delete(id: int, db: Session = Depends(get_db)):
     return RedirectResponse(url="/admin/products", status_code=status.HTTP_303_SEE_OTHER)
 
 
+# @app.on_event("startup")
+# def startup_event():
+#     db = SessionLocal()
+#     try:
+#         # Seed products once
+#         if db.query(Product).count() == 0:
+#             db.add_all([
+#                 Product(product_id="P1001", name="Pen",      available_stock=100, price_per_unit=10.0, tax_percentage=5.0),
+#                 Product(product_id="P1002", name="Notebook", available_stock=50,  price_per_unit=50.0, tax_percentage=12.0),
+#                 Product(product_id="P1003", name="Eraser",   available_stock=200, price_per_unit=5.0,  tax_percentage=0.0),
+#             ])
+#             db.commit()
+#         # Seed denominations once
+#         if db.query(Denomination).count() == 0:
+#             for v in [2000, 500, 200, 100, 50, 20, 10, 5, 2, 1]:
+#                 db.add(Denomination(value=v))
+#             db.commit()
+#     finally:
+#         db.close()
+
+# --- Seed / Ensure initial data on startup ---
 @app.on_event("startup")
 def startup_event():
     db = SessionLocal()
     try:
-        # Seed products once
+        # Seed sample products ONCE (only if none exist)
         if db.query(Product).count() == 0:
             db.add_all([
                 Product(product_id="P1001", name="Pen",      available_stock=100, price_per_unit=10.0, tax_percentage=5.0),
@@ -153,14 +174,17 @@ def startup_event():
                 Product(product_id="P1003", name="Eraser",   available_stock=200, price_per_unit=5.0,  tax_percentage=0.0),
             ])
             db.commit()
-        # Seed denominations once
-        if db.query(Denomination).count() == 0:
-            for v in [2000, 500, 200, 100, 50, 20, 10, 5, 2, 1]:
-                db.add(Denomination(value=v))
+
+        # Ensure all denominations exist (idempotent — adds only missing ones)
+        expected = [2000, 500, 200, 100, 50, 20, 10, 5, 2, 1]  # includes ₹1
+        existing = {v for (v,) in db.query(Denomination.value).all()}
+        to_add = [Denomination(value=v) for v in expected if v not in existing]
+        if to_add:
+            db.add_all(to_add)
             db.commit()
     finally:
         db.close()
-
+        
 @app.get("/", include_in_schema=False)
 def root():
     return RedirectResponse(url="/billing")
