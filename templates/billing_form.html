@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Billing Page{% endblock %}
+{% block heading %}Billing Page{% endblock %}
+{% block content %}
+
+<form method="post" action="/generate_bill" id="billing-form" class="form">
+  <!-- Customer Email -->
+  <div class="row">
+    <label class="label">Customer Email</label>
+    <input name="customer_email" type="email" required placeholder="Email ID" class="input w-280">
+  </div>
+
+  <!-- Bill section -->
+  <div class="row mt-20">
+    <label class="label">Bill section</label>
+    <div class="bill-rows">
+      <div id="rows"></div>
+      <button type="button" id="add-row" class="btn btn-secondary">Add New</button>
+    </div>
+  </div>
+
+  <hr class="divider">
+
+  <!-- Denominations -->
+  <div class="row">
+    <label class="label">Denominations</label>
+    <div class="denoms">
+      <!-- Left column with values and inputs -->
+      {% set denom_values = [500,50,20,10,5,2,1] %}
+      {% for v in denom_values %}
+      <div class="denom-row">
+        <span class="denom-value">{{ v }}</span>
+        <input type="number" min="0" step="1" value="0"
+               class="input w-120 denom-input" data-value="{{ v }}"
+               placeholder="Count">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  <!-- Cash paid -->
+  <div class="row mt-20">
+    <label class="label">Cash paid by customer</label>
+    <input name="paid_amount" id="paid_amount" type="number" step="0.01" min="0"
+           class="input w-280" placeholder="Amount">
+  </div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <a href="/billing" class="btn btn-light">Cancel</a>
+    <button type="submit" class="btn btn-primary">Generate Bill</button>
+  </div>
+</form>
+
+<script>
+(function () {
+  const rowsDiv = document.getElementById('rows');
+  const addBtn = document.getElementById('add-row');
+  let idx = 0;
+
+  function addRow(prefillPid = '', prefillQty = '') {
+    idx += 1;
+    const row = document.createElement('div');
+    row.className = 'bill-row';
+
+    row.innerHTML = `
+      <input name="product_id_${idx}" list="products" class="input w-220" placeholder="Product ID" value="${prefillPid}">
+      <input name="quantity_${idx}" type="number" min="1" step="1" class="input w-140" placeholder="Quantity" value="${prefillQty}">
+      <button type="button" class="btn btn-ghost remove">✕</button>
+    `;
+
+    row.querySelector('.remove').onclick = () => {
+      rowsDiv.removeChild(row);
+    };
+
+    rowsDiv.appendChild(row);
+  }
+
+  // start with 3 rows like the mock
+  addRow(); addRow(); addRow();
+  addBtn.onclick = () => addRow();
+
+  // datalist of product IDs for quick selection
+})();
+</script>
+
+<datalist id="products">
+  {% for p in products %}
+    <option value="{{ p.product_id }}">{{ p.name }}</option>
+  {% endfor %}
+</datalist>
+
+<script>
+  // Denomination auto-sum -> paid_amount
+  const denomInputs = document.querySelectorAll('.denom-input');
+  const paidField = document.getElementById('paid_amount');
+
+  function recomputePaid() {
+    let total = 0;
+    denomInputs.forEach(inp => {
+      const count = parseInt(inp.value || '0', 10);
+      const val = parseInt(inp.dataset.value, 10);
+      if (!isNaN(count) && count > 0) total += count * val;
+    });
+    // If user typed a custom amount, don't override unless denoms > 0
+    if (total > 0) paidField.value = total.toFixed(2);
+  }
+
+  denomInputs.forEach(inp => inp.addEventListener('input', recomputePaid));
+</script>
+
+{% endblock %}

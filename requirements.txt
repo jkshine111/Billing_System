@@ -1,0 +1,18 @@
+# Python 3.9+
+
+# Web framework
+fastapi>=0.111.0
+uvicorn[standard]>=0.30.0
+
+# Forms & templates
+wtforms>=3.1.2
+jinja2>=3.1.2
+python-multipart>=0.0.9
+email-validator>=2.1.0.post1
+
+# Database
+sqlalchemy>=2.0.25
+
+# Data validation
+pydantic>=2.6.0
+

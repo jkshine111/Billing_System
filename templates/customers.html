@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block heading %}Unique Customers{% endblock %}
+{% block content %}
+
+<div class="mt-2">
+  <a class="btn" href="{{ url_for('view_purchases') }}">← Back to Purchases</a>
+</div>
+
+
+<div class="table-wrap mt-6">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Email</th>
+        <th>Orders</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in customers %}
+      <tr>
+        <td>
+          <a href="{{ url_for('view_customers') }}?customer={{ c.email|urlencode }}">
+            {{ c.email }}
+          </a>
+        </td>
+        <td>{{ c.orders }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="2" class="muted">No customers found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if selected_customer %}
+  <hr>
+  <h3>Purchases for {{ selected_customer }}</h3>
+  <p>Total Revenue: ₹{{ "%.2f"|format(customer_total_revenue) }}</p>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>ID</th><th>Time</th><th>Total</th><th>Paid</th><th>Balance</th><th>Items</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in customer_rows %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.purchase_time.strftime("%Y-%m-%d %H:%M") }}</td>
+        <td>{{ "%.2f"|format(p.total_amount) }}</td>
+        <td>{{ "%.2f"|format(p.paid_amount) }}</td>
+        <td>{{ "%.2f"|format(p.balance) }}</td>
+        <td>{{ p.items_count }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6" class="muted">No purchases for this customer.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endif %}
+
+{% endblock %}

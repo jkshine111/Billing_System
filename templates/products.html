@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Products{% endblock %}
+{% block heading %}Products{% endblock %}
+{% block content %}
+
+<div class="mt-2">
+  <a class="btn" href="{{ url_for('view_purchases') }}">← Back to Purchases</a>
+  <a class="btn" href="{{ url_for('view_customers') }}" style="margin-left:8px;">View by Customers</a>
+</div>
+
+<div class="table-wrap mt-6">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product</th>
+        <th>Orders</th>
+        <th>Total Qty</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>
+          <a href="{{ url_for('view_products') }}?product={{ p.product|urlencode }}">
+            {{ p.product }}
+          </a>
+        </td>
+        <td>{{ p.orders }}</td>
+        <td>{{ p.total_qty }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3" class="muted">No products found.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if selected_product %}
+  <hr>
+  <h3>Purchases containing: {{ selected_product }}</h3>
+  <div class="stats">
+    <div>Total Qty: <strong>{{ product_total_qty }}</strong></div>
+    <div>Total Revenue (this product only): <strong>₹{{ "%.2f"|format(product_total_revenue) }}</strong></div>
+    <div><a class="btn" href="{{ url_for('view_products') }}">Clear filter</a></div>
+  </div>
+
+  <div class="table-wrap mt-6">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Purchase ID</th>
+          <th>Time</th>
+          <th>Qty (this product)</th>
+          <th>Revenue (this product)</th>
+          <th>Bill Total</th>
+          <th>Paid</th>
+          <th>Balance</th>
+          <th>Items in Bill</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in product_rows %}
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.purchase_time.strftime("%Y-%m-%d %H:%M") }}</td>
+          <td>{{ r.qty_for_product }}</td>
+          <td>{{ "%.2f"|format(r.revenue_for_product) }}</td>
+          <td>{{ "%.2f"|format(r.total_amount_bill) }}</td>
+          <td>{{ "%.2f"|format(r.paid_amount) }}</td>
+          <td>{{ "%.2f"|format(r.balance) }}</td>
+          <td>{{ r.items_count }}</td>
+          <td><a class="btn btn-secondary" href="/purchase/{{ r.id }}">View</a></td>
+        </tr>
+        {% else %}
+        <tr><td colspan="9" class="muted">No purchases for this product.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% endif %}
+
+{% endblock %}

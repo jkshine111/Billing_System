@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Billing Page - Summary{% endblock %}
+{% block heading %}Billing Page{% endblock %}
+{% block content %}
+
+{# --- Notification (shown if email_notice passed) --- #}
+{% if email_notice %}
+  <style>
+    .notice {
+      padding: 10px 14px; border-radius: 8px; margin-bottom: 12px;
+      display:flex; align-items:center; gap:10px;
+      box-shadow: 0 2px 10px rgba(0,0,0,.06);
+    }
+    .notice.success { background:#e8fff1; border:1px solid #b9f0cf; }
+    .notice.error   { background:#fff0f0; border:1px solid #f3b7b7; }
+    .notice .close  { background:none; border:none; font-size:16px; cursor:pointer; }
+  </style>
+  <div class="notice {{ email_status }}" id="email-flash">
+    <span>
+      {% if email_status == 'success' %}✅{% else %}⚠️{% endif %}
+      {{ email_notice }}
+    </span>
+    <button class="close" onclick="document.getElementById('email-flash').remove()">✕</button>
+  </div>
+  <script>
+    setTimeout(() => {
+      const n = document.getElementById('email-flash');
+      if (n) n.remove();
+    }, 3000);
+  </script>
+{% endif %}
+
+<div class="row">
+  <label class="label">Customer Email</label>
+  <div class="text">{{ customer_email }}</div>
+</div>
+
+<!-- Table -->
+<div class="table-wrap mt-10">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product ID</th>
+        <th>Unit Price</th>
+        <th>Quantity</th>
+        <th>Purchase Price</th>
+        <th>Tax % for item</th>
+        <th>Tax payable for item</th>
+        <th>Total price of the item</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% set subtotal = 0 %}
+      {% set totaltax = 0 %}
+      {% for d in details %}
+        {% set subtotal = subtotal + d.amount %}
+        {% set totaltax = totaltax + d.tax_amount %}
+        <tr>
+          <td>{{ d.product_obj.product_id }}</td>
+          <td>{{ "%.2f"|format(d.unit_price) }}</td>
+          <td>{{ d.quantity }}</td>
+          <td>{{ "%.2f"|format(d.amount) }}</td>
+          <td>{{ "%.2f"|format(d.tax_percent) }}</td>
+          <td>{{ "%.2f"|format(d.tax_amount) }}</td>
+          <td>{{ "%.2f"|format(d.total) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<!-- Totals block -->
+<div class="totals">
+  <div><span>Total price without tax:</span>
+    <strong>{{ "%.2f"|format(subtotal_before_tax) }}</strong>
+  </div>
+  <div><span>Total tax payable:</span>
+    <strong>{{ "%.2f"|format(total_tax) }}</strong>
+  </div>
+  <div><span>Net price of the purchased items:</span>
+    <strong>{{ "%.2f"|format(total) }}</strong>
+  </div>
+  <div><span>Rounded down value of the purchased items net price:</span>
+    <strong>{{ "%.2f"|format(rounded_down) }}</strong>
+  </div>
+  <div><span>Balance payable to the customer:</span>
+    <strong>{{ "%.2f"|format(balance) }}</strong>
+  </div>
+</div>
+
+<hr class="divider mt-20">
+
+<!-- Balance Denomination -->
+<div class="row">
+  <label class="label">Balance Denomination:</label>
+  <div class="denoms-list">
+    {% for v, c in balance_denoms.items() %}
+      <div class="denom-line">{{ v }}: <span>{{ c }}</span></div>
+    {% endfor %}
+    {% if not balance_denoms %}
+      <div class="muted">No change to return.</div>
+    {% endif %}
+  </div>
+</div>
+
+<div class="actions">
+  <a href="/billing" class="btn btn-light">New Bill</a>
+  <a class="btn btn-secondary" href="/purchase/{{ purchase_id }}">View details</a>
+</div>
+
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends "base.html" %}
+{% block title %}Purchases{% endblock %}
+{% block heading %}Purchases{% endblock %}
+{% block content %}
+
+<div class="stats">
+    <div>Total revenue: <strong>₹{{ "%.2f"|format(total_revenue) }}</strong></div>
+    <div>
+        Unique customers:
+        <strong>
+            <a href="{{ url_for('view_customers') }}">{{ unique_customers }}</a>
+        </strong>
+    </div>
+
+    <div>Total purchases: <strong>{{ purchases|length }}</strong></div>
+</div>
+
+{# --- Clickable unique customer list --- #}
+<div class="mt-6">
+    <h3>Customers</h3>
+    <ul class="chips">
+        {% for c in customers %}
+        <li style="display:inline-block; margin:4px 8px;">
+            <a class="btn btn-small" href="{{ url_for('view_purchases') }}?customer={{ c.email|urlencode }}">
+                {{ c.email }}
+            </a>
+            <span class="muted">({{ c.orders }})</span>
+        </li>
+        {% else %}
+        <li class="muted">No customers yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="table-wrap mt-10">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Customer</th>
+                <th>Time</th>
+                <th>Total</th>
+                <th>Paid</th>
+                <th>Balance</th>
+                <th>Items</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for p in purchase_rows %}
+            <tr>
+                <td>{{ p.id }}</td>
+                <td>
+                    <a href="{{ url_for('view_purchases') }}?customer={{ p.customer_email|trim|lower|urlencode }}">
+                        {{ p.customer_email }}
+                    </a>
+                </td>
+                <td>{{ p.purchase_time.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>{{ "%.2f"|format(p.total_amount) }}</td>
+                <td>{{ "%.2f"|format(p.paid_amount) }}</td>
+                <td>{{ "%.2f"|format(p.balance) }}</td>
+                <td>{{ p.items_count }}</td>
+                <td><a class="btn btn-secondary" href="/purchase/{{ p.id }}">View</a></td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8" class="muted">No purchases yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{# --- If a customer is selected, show their details table --- #}
+{% if selected_customer %}
+<div class="mt-12">
+    <div class="stats">
+        <div>Customer: <strong>{{ selected_customer }}</strong></div>
+        <div>Total revenue from customer: <strong>₹{{ "%.2f"|format(customer_total_revenue) }}</strong></div>
+        <div>Orders: <strong>{{ customer_rows|length }}</strong></div>
+        <div><a class="btn" href="{{ url_for('view_purchases') }}">Clear filter</a></div>
+    </div>
+
+    <div class="table-wrap mt-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Time</th>
+                    <th>Total</th>
+                    <th>Paid</th>
+                    <th>Balance</th>
+                    <th>Items</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in customer_rows %}
+                <tr>
+                    <td>{{ p.id }}</td>
+                    <td>{{ p.purchase_time.strftime("%Y-%m-%d %H:%M") }}</td>
+                    <td>{{ "%.2f"|format(p.total_amount) }}</td>
+                    <td>{{ "%.2f"|format(p.paid_amount) }}</td>
+                    <td>{{ "%.2f"|format(p.balance) }}</td>
+                    <td>{{ p.items_count }}</td>
+                    <td><a class="btn btn-secondary" href="/purchase/{{ p.id }}">View</a></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="muted">No purchases for this customer.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>{% block title %}Billing Page{% endblock %}</title>
+  <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <div class="page-title">{% block heading %}Billing Page{% endblock %}</div>
+      <nav class="top-nav">
+        <a href="/billing">Billing</a>
+        <a href="/purchases">Purchases</a>
+        <a href="/admin/products">Admin</a>
+      </nav>
+    </header>
+
+    <section class="card">
+      {% block content %}{% endblock %}
+    </section>
+  </div>
+</body>
+</html>

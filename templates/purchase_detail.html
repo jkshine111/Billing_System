@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Purchase #{{ purchase.id }}{% endblock %}
+{% block heading %}Purchase #{{ purchase.id }}{% endblock %}
+{% block content %}
+
+<div class="row">
+  <div><strong>Customer:</strong> {{ purchase.customer_email }}</div>
+  <div class="ml-20"><strong>Time:</strong> {{ purchase.purchase_time.strftime("%Y-%m-%d %H:%M") }}</div>
+</div>
+
+<div class="table-wrap mt-10">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Product</th><th>Code</th><th>Qty</th><th>Unit</th><th>Tax %</th><th>Subtotal</th><th>Tax</th><th>Total</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in line_items %}
+      <tr>
+        <td>{{ r.product_name }}</td>
+        <td>{{ r.product_code }}</td>
+        <td>{{ r.quantity }}</td>
+        <td>{{ "%.2f"|format(r.unit_price) }}</td>
+        <td>{{ "%.2f"|format(r.tax_percent) }}</td>
+        <td>{{ "%.2f"|format(r.subtotal) }}</td>
+        <td>{{ "%.2f"|format(r.tax_amount) }}</td>
+        <td>{{ "%.2f"|format(r.line_total) }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="totals">
+  <div><span>Total price without tax:</span> <strong>{{ "%.2f"|format(subtotal_before_tax) }}</strong></div>
+  <div><span>Total tax payable:</span> <strong>{{ "%.2f"|format(total_tax) }}</strong></div>
+  <div><span>Net price:</span> <strong>{{ "%.2f"|format(subtotal_before_tax + total_tax) }}</strong></div>
+</div>
+
+<div class="actions">
+  <a class="btn btn-light" href="/purchases">Back</a>
+</div>
+{% endblock %}

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Admin – Products{% endblock %}
+{% block heading %}Admin – Products{% endblock %}
+{% block content %}
+
+<div class="actions mb-10">
+  <a href="/admin/products/new" class="btn btn-primary">+ New Product</a>
+</div>
+
+<div class="table-wrap">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>#</th><th>Code</th><th>Name</th><th>Stock</th><th>Unit Price</th><th>Tax %</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for p in products %}
+      <tr>
+        <td>{{ p.id }}</td>
+        <td>{{ p.product_id }}</td>
+        <td>{{ p.name }}</td>
+        <td>{{ p.available_stock }}</td>
+        <td>{{ "%.2f"|format(p.price_per_unit) }}</td>
+        <td>{{ "%.2f"|format(p.tax_percentage) }}</td>
+        <td class="t-right">
+          <a class="btn btn-ghost" href="/admin/products/{{ p.id }}/edit">Edit</a>
+          <form method="post" action="/admin/products/{{ p.id }}/delete" style="display:inline">
+            <button class="btn btn-danger" onclick="return confirm('Delete this product?')">Delete</button>
+          </form>
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7" class="muted">No products yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
