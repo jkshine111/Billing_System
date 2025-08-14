@@ -93,7 +93,11 @@ Tech Stack: FastAPI · SQLite · Jinja2 · SQLAlchemy
 ## 🚀 Quick Start
 
 ```bash
-# 1) Create & activate a venv (Python 3.9+)
+# 1) Clone the repository and enter the project folder
+git clone https://github.com/jkshine111/Billing_System.git
+cd Billing_System
+
+# 2) Create & activate a venv (Python 3.9+)
 
 # --- On macOS/Linux ---
 python3 -m venv poc-env
@@ -101,9 +105,9 @@ source poc-env/bin/activate
 
 # --- On Windows (Command Prompt) ---
 python -m venv poc-env
-.poc-env\Scripts\activate
+poc-env\Scripts\activate
 
-# 2) Install dependencies
+# 3) Install dependencies
 
 # --- On macOS/Linux ---
 pip3 install -r requirements.txt
@@ -111,25 +115,24 @@ pip3 install -r requirements.txt
 # --- On Windows ---
 pip install -r requirements.txt
 
-
-# 3) Initialize DB (first run creates tables)
+# 4) Initialize DB (first run creates tables)
 #   If your models call Base.metadata.create_all(...) on import, just run the app.
 #   Otherwise, add a small init step in app.py/database.py.
 
-# 4) Start the server
+# 5) Start the server
 # Default (localhost)
-# uvicorn app:app --reload
+uvicorn app:app --reload
 
 # Bind to all interfaces (useful for LAN access)
 uvicorn app:app --reload --host 0.0.0.0 --port 8000
 
 
-# 5) Open in browser
-# Billing form:        http://127.0.0.1:8000/billing
-# Purchases dashboard: http://127.0.0.1:8000/purchases
-# Customers view:      http://127.0.0.1:8000/customers
-# Products view:       http://127.0.0.1:8000/products
-# Admin (products):    http://127.0.0.1:8000/admin/products
+# 6) Open in browser
+# Billing form:        http://0.0.0.0:8000/billing
+# Purchases dashboard: http://0.0.0.0:8000/purchases
+# Customers view:      http://0.0.0.0:8000/customers
+# Products view:       http://0.0.0.0:8000/products
+# Admin (products):    http://0.0.0.0:8000/admin/products
 ```
 
 ## ✉️ Email Setup
